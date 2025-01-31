@@ -35,8 +35,7 @@ void init(const char * title, int width, int height) {
     exit(3);
   }
 
-  // glEnableClientState(GL_VERTEX_ARRAY);
-  // glEnableClientState(GL_COLOR_ARRAY);
+  glEnable(GL_DEPTH_TEST);
 }
 
 void print_gl_errors(){
@@ -69,42 +68,103 @@ void print_gl_errors(){
 }
 
 void draw_triangle() {
-  glBegin(GL_TRIANGLES);
-  // Middle triangle
+  GLfloat face1[] = {
+    -0.5, 0.5, 0.5,
+    0.5, 0.5, 0.5,
+    -0.5, -0.5, 0.5,
+
+    0.5, -0.5, 0.5,
+    -0.5, -0.5, 0.5,
+    0.5, 0.5, 0.5,
+  };
+
+  GLfloat face2[] = {
+    -0.5, 0.5, 0.5,
+    -0.5, 0.5, -0.5,
+    -0.5, -0.5, 0.5,
+
+    -0.5, -0.5, -0.5,
+    -0.5, 0.5, -0.5,
+    -0.5, -0.5, 0.5,
+  };
+
+  GLfloat face3[] = {
+    -0.5, 0.5, -0.5,
+    0.5, 0.5, -0.5,
+    -0.5, -0.5, -0.5,
+
+    0.5, -0.5, -0.5,
+    -0.5, -0.5, -0.5,
+    0.5, 0.5, -0.5,
+  };
+
+  GLfloat face4[] = {
+    0.5, 0.5, 0.5,
+    0.5, 0.5, -0.5,
+    0.5, -0.5, 0.5,
+
+    0.5, -0.5, -0.5,
+    0.5, 0.5, -0.5,
+    0.5, -0.5, 0.5,
+  };
+
+  GLfloat face5[] = {
+    0.5, -0.5, -0.5,
+    -0.5, -0.5, -0.5,
+    0.5, -0.5, 0.5,
+
+    -0.5, -0.5, 0.5,
+    -0.5, -0.5, -0.5,
+    0.5, -0.5, 0.5,
+  };
+
+  GLfloat face6[] = {
+    0.5, 0.5, -0.5,
+    -0.5, 0.5, -0.5,
+    0.5, 0.5, 0.5,
+
+    -0.5, 0.5, 0.5,
+    -0.5, 0.5, -0.5,
+    0.5, 0.5, 0.5,
+  };
+
+  glEnableClientState(GL_VERTEX_ARRAY);
+
   glColor3f(1.0, 0.0, 0.0);
-  glVertex3f(0, 0.5, 1);
-  
-  glColor3f(0.0, 1.0, 0.0);
-  glVertex2f(1, -1);
+  glVertexPointer(3, GL_FLOAT, 0, face1);
+  glDrawArrays(GL_TRIANGLES, 0, 6);
 
   glColor3f(0.0, 0.0, 1.0);
-  glVertex2f(-1, -1);
+  glVertexPointer(3, GL_FLOAT, 0, face2);
+  glDrawArrays(GL_TRIANGLES, 0, 6);
 
-  // Left triangle
+  glColor3f(0.0, 1.0, 0.0);
+  glVertexPointer(3, GL_FLOAT, 0, face3);
+  glDrawArrays(GL_TRIANGLES, 0, 6);
+
+  glColor3f(0.0, 1.0, 1.0);
+  glVertexPointer(3, GL_FLOAT, 0, face4);
+  glDrawArrays(GL_TRIANGLES, 0, 6);
+
   glColor3f(1.0, 0.0, 1.0);
-  glVertex2f(-1, 0);
-  glVertex2f(-1, 1);
-  glVertex2f(0, 0.5);
+  glVertexPointer(3, GL_FLOAT, 0, face5);
+  glDrawArrays(GL_TRIANGLES, 0, 6);
 
-  // Right triangle
+  glVertexPointer(3, GL_FLOAT, 0, face6);
   glColor3f(1.0, 1.0, 0.0);
-  glVertex2f(1, 0);
-  glVertex2f(1, 1);
-  glVertex2f(0, 0.5);
-  glEnd();
+  glDrawArrays(GL_TRIANGLES, 0, 6);
+
+  glDisableClientState(GL_VERTEX_ARRAY);
 
   print_gl_errors();
-
 }
 
 int main(int argc, char *argv[]) {
-  init("splitshot", 1280, 720);
+  init("splitshot", 800, 800);
 
   SDL_Event event;
   GLboolean running = GL_TRUE;
   while (running) {
-    glClear(GL_COLOR_BUFFER_BIT);
-
     if (SDL_PollEvent(&event)) {
       switch (event.type) {
         case SDL_QUIT:
@@ -117,8 +177,14 @@ int main(int argc, char *argv[]) {
             glViewport(0, 0, (GLsizei) w, (GLsizei) h);
           }
           break;
+        case SDL_KEYDOWN:
+          if (event.key.keysym.sym == SDLK_ESCAPE) {
+            running = GL_FALSE;
+          }
       }
     }
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glRotatef(1, 1.0, 1.0, 0);
 
     draw_triangle();
 
