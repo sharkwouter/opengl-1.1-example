@@ -12,3 +12,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   ${SDL2_LIBRARIES}
   ${GL_LIBRARIES}
 )
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+  ${SDL2_INCLUDE_DIRS}
+)

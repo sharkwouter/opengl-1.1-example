@@ -1,7 +1,9 @@
 #include <stdio.h>
 
-#include <SDL2/SDL.h>
-#include <GL/gl.h>
+#include <SDL.h>
+
+#define NO_SDL_GLEXT
+#include <SDL_opengl.h>
 
 SDL_Window * window = NULL;
 SDL_GLContext glcontext;
@@ -66,25 +68,33 @@ void print_gl_errors(){
   }
 }
 
-void render_something() {
-  glClear(GL_COLOR_BUFFER_BIT);
-
+void draw_triangle() {
   glBegin(GL_TRIANGLES);
+  // Middle triangle
   glColor3f(1.0, 0.0, 0.0);
-  glVertex2f(0, 0.5);
+  glVertex3f(0, 0.5, 1);
   
   glColor3f(0.0, 1.0, 0.0);
-  glVertex2f(0.5, -0.5);
+  glVertex2f(1, -1);
 
   glColor3f(0.0, 0.0, 1.0);
-  glVertex2f(-0.5, -0.5);
+  glVertex2f(-1, -1);
+
+  // Left triangle
+  glColor3f(1.0, 0.0, 1.0);
+  glVertex2f(-1, 0);
+  glVertex2f(-1, 1);
+  glVertex2f(0, 0.5);
+
+  // Right triangle
+  glColor3f(1.0, 1.0, 0.0);
+  glVertex2f(1, 0);
+  glVertex2f(1, 1);
+  glVertex2f(0, 0.5);
   glEnd();
 
   print_gl_errors();
 
-  glFlush();
-
-  SDL_GL_SwapWindow(window);
 }
 
 int main(int argc, char *argv[]) {
@@ -93,14 +103,27 @@ int main(int argc, char *argv[]) {
   SDL_Event event;
   GLboolean running = GL_TRUE;
   while (running) {
+    glClear(GL_COLOR_BUFFER_BIT);
+
     if (SDL_PollEvent(&event)) {
       switch (event.type) {
         case SDL_QUIT:
           running = GL_FALSE;
           break;
+        case SDL_WINDOWEVENT:
+          if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+            int w, h;
+            SDL_GetWindowSize(window, &w, &h);
+            glViewport(0, 0, (GLsizei) w, (GLsizei) h);
+          }
+          break;
       }
     }
-    render_something();
+
+    draw_triangle();
+
+    glFlush();
+    SDL_GL_SwapWindow(window);
   }
   cleanup();
 }
