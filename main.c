@@ -8,6 +8,13 @@
 SDL_Window * window = NULL;
 SDL_GLContext glcontext;
 
+#ifdef __PSP__
+# define WIDTH 480
+# define HEIGHT 272
+#else
+# define WIDTH 800
+# define HEIGHT 800
+#endif
 
 void cleanup() {
   SDL_GL_DeleteContext(glcontext);
@@ -67,7 +74,7 @@ void print_gl_errors(){
   }
 }
 
-void draw_triangle() {
+void draw_cube() {
   GLfloat face1[] = {
     -0.5, 0.5, 0.5,
     0.5, 0.5, 0.5,
@@ -160,7 +167,7 @@ void draw_triangle() {
 }
 
 int main(int argc, char *argv[]) {
-  init("splitshot", 800, 800);
+  init("OpenGL 1.1 Example", WIDTH, HEIGHT);
 
   SDL_Event event;
   GLboolean running = GL_TRUE;
@@ -186,7 +193,7 @@ int main(int argc, char *argv[]) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glRotatef(1, 1.0, 1.0, 0);
 
-    draw_triangle();
+    draw_cube();
 
     glFlush();
     SDL_GL_SwapWindow(window);
